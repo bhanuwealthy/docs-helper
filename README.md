@@ -13,5 +13,5 @@ This script is designed to copy docs from a source directory (checks all subdire
 git clone https://github.com/KaustubhMishra25/docs-helper.git
 cd docs-helper
 cargo build
-cargo run
+cargo run -- <source path> <destination path>
 ```
