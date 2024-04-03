@@ -56,5 +56,17 @@ fn helper(search_dir_path: &str, destination_dir_path: &str) {
 }
 
 fn main() {
-    helper("/home/kamish/dev/A", "/home/kamish/dev/C");
+    let mut input_source = String::new();
+    let mut input_destination = String::new();
+
+    println!("Enter source path:");
+    io::stdin().read_line(&mut input_source).expect("Failed to read input");
+    let source_path = input_source.trim();
+
+    println!("Enter destination path:");
+    io::stdin().read_line(&mut input_destination).expect("Failed to read input");
+    let destination_path = input_destination.trim();
+
+    // Call the helper function with the provided paths
+    helper(source_path, destination_path);
 }
