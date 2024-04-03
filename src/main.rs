@@ -32,7 +32,7 @@ fn helper(search_dir_path: &str, destination_dir_path: &str) {
                     if let Some(file_name) = file.file_name().and_then(|f| f.to_str()) {
                         if file_name == "docs" {
                             println!("docs folder found, copying all contents");
-                            let _ = copy_docs(&file, &Path::new(&format!("{}/{}", destination_dir_path, file.parent().unwrap().to_str().unwrap())));
+                            let _ = copy_docs(&file, &Path::new(&format!("{}/{}", destination_dir_path, file.parent().unwrap().to_str().unwrap().replace("docs/", "").as_str())));
                         }
                     }
                     helper(&file.to_str().unwrap(), destination_dir_path);
@@ -42,8 +42,6 @@ fn helper(search_dir_path: &str, destination_dir_path: &str) {
                     if let Ok(m) = file.metadata() {
                         if m.len() == 0 {
                             println!("{} is an empty file", file.display());
-                        } else {
-                            println!("{} is a file, copying to docs/ folder", file.display());
                         }
                     } else {
                         println!("Could not get metadata for {}", file.display());
@@ -56,17 +54,10 @@ fn helper(search_dir_path: &str, destination_dir_path: &str) {
 }
 
 fn main() {
-    let mut input_source = String::new();
-    let mut input_destination = String::new();
+    let source_path = std::env::args().nth(1).expect("No source folder path provided!");
 
-    println!("Enter source path:");
-    io::stdin().read_line(&mut input_source).expect("Failed to read input");
-    let source_path = input_source.trim();
-
-    println!("Enter destination path:");
-    io::stdin().read_line(&mut input_destination).expect("Failed to read input");
-    let destination_path = input_destination.trim();
+    let destination_path = std::env::args().nth(2).expect("Destination folder path not provided!");
 
     // Call the helper function with the provided paths
-    helper(source_path, destination_path);
+    helper(source_path.as_str(), destination_path.as_str());
 }
