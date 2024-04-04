@@ -1,37 +1,23 @@
-ARG RUST_VERSION=1.77.1
-ARG APP_NAME=docs-helper
+# Use a Rust base image
+FROM rust:latest AS builder
 
-FROM rust:${RUST_VERSION}-alpine AS build
-ARG APP_NAME
-WORKDIR /app
+# Set the working directory
+WORKDIR /usr/src/app
 
-RUN apk add --no-cache clang lld musl-dev git
+# Copy the source code into the container
+COPY . .
 
-RUN --mount=type=bind,source=src,target=src \
-    --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
-    --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
-    --mount=type=cache,target=/app/target/ \
-    --mount=type=cache,target=/usr/local/cargo/git/db \
-    --mount=type=cache,target=/usr/local/cargo/registry/ \
-cargo build --locked --release && \
-cp ./target/release/$APP_NAME /bin/server
+# Build the application
+RUN cargo build --release
 
+# Create a new lightweight image
+FROM ubuntu:latest
 
-FROM alpine:3.18 AS final
+# Set the working directory
+WORKDIR /usr/src/app
 
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
-USER appuser
+# Copy the compiled executable from the builder stage
+COPY --from=builder /usr/src/app/target/release/docs-helper .
 
-COPY --from=build /bin/server /bin/
-
-EXPOSE 8000
-
-CMD ["/bin/server"]
+# Set the entry point
+ENTRYPOINT ["./docs-helper"]

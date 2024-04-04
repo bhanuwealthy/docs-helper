@@ -1,6 +1,5 @@
 mod tests;
 
-use pathdiff::diff_paths;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
@@ -36,14 +35,7 @@ fn helper(search_dir_path: &str, destination_dir_path: &str) {
                     if let Some(file_name) = file.file_name().and_then(|f| f.to_str()) {
                         if file_name == "docs" {
                             println!("docs folder found, copying all contents");
-                            let _ = copy_docs(
-                                &file,
-                                &Path::new(&format!(
-                                    "{}/{}",
-                                    destination_dir_path,
-                                    diff_paths(file.parent().unwrap(), destination_dir_path).unwrap().to_str().unwrap().replace("../", "").as_str().replace("docs/", "")
-                                )),
-                            );
+                            let _ = copy_docs(&file, &Path::new(&format!("{}/{}", destination_dir_path, file.parent().unwrap().to_str().unwrap().replace("docs/", "").as_str())));
                         }
                     }
                     helper(&file.to_str().unwrap(), destination_dir_path);
@@ -65,14 +57,13 @@ fn helper(search_dir_path: &str, destination_dir_path: &str) {
 }
 
 fn main() {
-    let source_path = std::env::args()
-        .nth(1)
-        .expect("No source folder path provided!");
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 3 {
+        eprintln!("Usage: {} <root> <target>", args[0]);
+        std::process::exit(1);
+    }
+    let root = Path::new(&args[1]);
+    let target = Path::new(&args[2]);
+    helper(root.to_str().unwrap(), target.to_str().unwrap());
 
-    let destination_path = std::env::args()
-        .nth(2)
-        .expect("Destination folder path not provided!");
-
-    // Call the helper function with the provided paths
-    helper(source_path.as_str(), destination_path.as_str());
 }
