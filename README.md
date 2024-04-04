@@ -18,7 +18,7 @@ cargo run -- <source path> <destination path>
 
 ## Run image
 
-#### The destination folder need not be mounted, a folder name can be provided and it will be creadted accordingly
+#### The destination folder need not be mounted, a folder name can be provided and it will be creadted accordingly.
 ```
 docker build -t docs-helper .
 docker run -v <path_to_local_src>:/source -v <path_to_local_dest>:/destination docs-helper /source /destination
