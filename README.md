@@ -23,3 +23,45 @@ cargo run -- <source path> <destination path>
 docker build -t docs-helper .
 docker run -v <path_to_local_src>:/source -v <path_to_local_dest>:/destination docs-helper /source /destination
 ```
+
+## Usage
+```shell
+$ cargo run -- ../docs-test ../docs-test-result 
+
+$ tree ../docs-test ../docs-test-result 
+
+# src dir
+../docs-test
+└── A
+    ├── B
+    │   ├── C
+    │   │   └── docs
+    │   │       ├── a-b-c.md
+    │   │       └── c.md
+    │   └── docs
+    │       ├── E
+    │       │   └── docs
+    │       │       ├── a-b-e.md
+    │       │       └── e.md
+    │       └── b.md
+    ├── D
+    │   └── d.md
+    └── docs
+        └── A.md
+
+
+# target dir
+../docs-test-result
+└── A
+    ├── A.md
+    └── B
+        ├── C
+        │   ├── a-b-c.md
+        │   └── c.md
+        ├── E
+        │   ├── a-b-e.md
+        │   └── e.md
+        └── b.md
+
+8 directories, 6 files
+```
