@@ -41,15 +41,16 @@ fn helper(search_dir_path: &str, destination_dir_path: &str) {
                     helper(&file.to_str().unwrap(), destination_dir_path);
                 } else if file.is_symlink() {
                     println!("{} is a symlink", file.display());
-                } else {
-                    if let Ok(m) = file.metadata() {
-                        if m.len() == 0 {
-                            println!("{} is an empty file", file.display());
-                        }
-                    } else {
-                        println!("Could not get metadata for {}", file.display());
-                    }
-                }
+                } 
+                // else {
+                //     if let Ok(m) = file.metadata() {
+                //         if m.len() == 0 {
+                //             println!("{} is an empty file", file.display());
+                //         }
+                //     } else {
+                //         println!("Could not get metadata for {}", file.display());
+                //     }
+                // }
             }
         }
         Err(e) => println!("Error: {}", e),
