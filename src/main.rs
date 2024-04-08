@@ -19,7 +19,7 @@ fn copy_docs(source: &Path, destination: &Path) -> io::Result<()> {
         let entry = entry?;
         let filetype = entry.file_type()?;
         if filetype.is_dir() {
-            continue;
+            copy_docs(entry.path().as_path(), destination.join(entry.file_name()).as_path())?;
         } else {
             println!("Copying to: {}",destination.join(entry.file_name()).display());
             fs::copy(entry.path(), destination.join(entry.file_name()))?;
