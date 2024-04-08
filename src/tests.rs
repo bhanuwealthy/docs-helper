@@ -1,3 +1,5 @@
+use std::fmt::format;
+
 use super::*;
 
 #[test]
@@ -49,9 +51,12 @@ fn test_full_script() {
 
     println!("SOURCE: {}\nDESTINATION: {}",source_dir_path.display(),destination_dir_path.display());
     helper(source_dir_path.to_str().unwrap(),destination_dir_path.to_str().unwrap());
-
-    let dest_doc1_path = destination_dir_path.join("source").join("doc1.txt");
-    let dest_doc2_path = destination_dir_path.join("source/subfolder").join("doc2.txt");
+    let dest_str = destination_dir_path.to_str().unwrap();
+    let src_str = source_dir_path.to_str().unwrap();
+    let temp_str = format!("{}/{}",dest_str,src_str);
+    let dest_doc1_path = Path::new(&temp_str).join("doc1.txt");
+    let sub_temp_str = format!("{}/{}",dest_str,subfolder_dir_path.to_str().unwrap());
+    let dest_doc2_path = Path::new(&sub_temp_str).join("doc2.txt");
     assert!(dest_doc1_path.exists());
     assert!(dest_doc2_path.exists());
 }
