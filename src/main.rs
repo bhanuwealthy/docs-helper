@@ -2,6 +2,8 @@ mod tests;
 
 use std::path::{Path, PathBuf};
 use std::{fs, io};
+use pathdiff::diff_paths;
+
 
 fn get_files_in_folder(path: &str) -> io::Result<Vec<PathBuf>> {
     let entries = fs::read_dir(path)?;
@@ -35,7 +37,8 @@ fn helper(search_dir_path: &str, destination_dir_path: &str) {
                     if let Some(file_name) = file.file_name().and_then(|f| f.to_str()) {
                         if file_name == "docs" {
                             println!("docs folder found, copying all contents");
-                            let _ = copy_docs(&file, &Path::new(&format!("{}/{}", destination_dir_path, file.parent().unwrap().to_str().unwrap().replace("docs/", "").as_str())));
+                            // let _ = copy_docs(&file, &Path::new(&format!("{}/{}", destination_dir_path, file.parent().unwrap().to_str().unwrap().replace("docs/", "").as_str())));
+                            let _ = copy_docs(&file, Path::new(&format!("{}/{}",destination_dir_path,diff_paths(&file, destination_dir_path).unwrap().as_path().to_str().unwrap().replace("/docs","").replace("../","").as_str())));
                         }
                     }
                     helper(&file.to_str().unwrap(), destination_dir_path);
