@@ -1,4 +1,4 @@
-name: Rust
+name: Push docs-helper image to AWS ECR repo
 
 on:
   push:
@@ -16,16 +16,35 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      id: configure-creds
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1
+    
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+    
     - name: Install Rust Toolchain
+      id: install-rust
       run: |
         curl --proto https --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
         source ~/.cargo/env
-    - name: Build
-      run: cargo build --release
+      
     - name: Run tests
+      id: run-tests
       run: cargo test --verbose
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4 
-      with:
-          name: docs-helper
-          path: target/release/docs-helper
+    
+    - name: Build Image and Upload Image to AWS ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+        IMAGE_TAG: docs-helper
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
