@@ -53,9 +53,9 @@ fn test_full_script() {
     helper(source_dir_path.to_str().unwrap(),destination_dir_path.to_str().unwrap());
     let dest_str = destination_dir_path.to_str().unwrap();
     let src_str = source_dir_path.to_str().unwrap();
-    let temp_str = format!("{}/{}",dest_str,src_str);
+    let temp_str = format!("{}/source",dest_str);
     let dest_doc1_path = Path::new(&temp_str).join("doc1.txt");
-    let sub_temp_str = format!("{}/{}",dest_str,subfolder_dir_path.to_str().unwrap());
+    let sub_temp_str = format!("{}/source/subfolder",dest_str);
     let dest_doc2_path = Path::new(&sub_temp_str).join("doc2.txt");
     assert!(dest_doc1_path.exists());
     assert!(dest_doc2_path.exists());
