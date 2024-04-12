@@ -37,12 +37,20 @@ jobs:
       id: run-tests
       run: cargo test --verbose
     
+    - name: Get commit hash
+      id: get-commit-hash
+      run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
+
+    - name: Get timestamp
+      id: get-timestamp
+      run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
+    
     - name: Build Image and Upload Image to AWS ECR
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
-        IMAGE_TAG: docs-helper
+        IMAGE_TAG: ${{steps.get-commit-hash.outputs.commit-hash}}-${{steps.get-timestamp.outputs.timestamp}} # Image tag decided by timestamp and commit hash for debugging
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
