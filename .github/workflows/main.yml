@@ -17,11 +17,11 @@ jobs:
 
     - name: Configure AWS credentials
       id: configure-creds
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-north-1
+        aws-region: ap-south-1
     
     - name: Login to Amazon ECR
       id: login-ecr
@@ -37,20 +37,19 @@ jobs:
       id: run-tests
       run: cargo test --verbose
     
-    - name: Get commit hash
-      id: get-commit-hash
-      run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
-
-    - name: Get timestamp
-      id: get-timestamp
-      run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
+    - name: Set commit hash and timestamp as environment variables
+      run: |
+        echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "TIMESTAMP=$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_ENV
+      env:
+        GITHUB_ENV: .env
     
     - name: Build Image and Upload Image to AWS ECR
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.ECR_REPO_NAME }}
-        IMAGE_TAG: ${{steps.get-commit-hash.outputs.commit-hash}}-${{steps.get-timestamp.outputs.timestamp}} # Image tag decided by timestamp and commit hash for tracking
+        IMAGE_TAG: docshelper-${{env.COMMIT_HASH}}-${{env.TIMESTAMP}} # Image tag decided by timestamp and commit hash for tracking
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
