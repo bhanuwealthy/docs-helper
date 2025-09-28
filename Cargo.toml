@@ -1,0 +1,31 @@
+[profile.release]
+opt-level = "z"      # default is 3
+lto = true           # enable Link Time Optimization
+# codegen-units = 1  # better optimizations at the cost of compile time
+
+
+[profile.dev]
+opt-level = 1       # default is 0
+debug = true
+
+
+[package]
+name = "cp_docs"
+version = "1.0.1"
+edition = "2021"
+
+# Required metadata for crates.io
+authors = ["bhanug <bhanuganga08@gmail.com>"]
+description = "A small tool to find and copy docs/ directories recursively"
+license = "MIT OR Apache-2.0" # choose one or both
+repository = "https://github.com/bhanuwealthy/docs-helper"
+readme = "README.md"          # include a README for crates.io page
+keywords = ["docs", "copy", "cli"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "cp_docs"
+path = "src/main.rs"
+
+[dependencies]
+walkdir = "2.5.0"
